@@ -1,9 +1,6 @@
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
-import * as WebBrowser from "expo-web-browser";
 import { useEffect } from "react";
 import { Button } from "react-native";
-
-WebBrowser.maybeCompleteAuthSession();
 
 const CLIENT_ID = "Ov23liVbQmkBAiSIuewZ";
 
@@ -13,7 +10,7 @@ const discovery = {
   revocationEndpoint: 'https://github.com/settings/connections/applications/' + CLIENT_ID,
 };
 
-export default function App() {
+export default function GitHubAuthScreen() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: CLIENT_ID,

@@ -3,11 +3,11 @@ import { useEffect } from "react";
 import { Button } from "react-native";
 
 const CLIENT_ID = "Ov23liVbQmkBAiSIuewZ";
+const EXCHANGE_API = "https://commit-cadence.vercel.app/api/exchange";
+
 
 const discovery = {
   authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-  tokenEndpoint: 'https://github.com/login/oauth/access_token',
-  revocationEndpoint: 'https://github.com/settings/connections/applications/' + CLIENT_ID,
 };
 
 export default function GitHubAuthScreen() {
@@ -19,7 +19,7 @@ export default function GitHubAuthScreen() {
         scheme: 'commitcadence',
         path: 'github/callback',
       }),
-      
+      usePKCE: false, // PKCE is not supported by GitHub OAuth
     },
     discovery
   );
@@ -27,9 +27,16 @@ export default function GitHubAuthScreen() {
   useEffect(() => {
     if (response?.type === 'success') {
       const { code } = response.params;
-      // Handle the authorization code here, e.g., exchange it for an access token
-      console.log('Authorization code:', code);
-      // TODO exchange code for access token
+      fetch(EXCHANGE_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log('Access token:', data.accessToken);
+        })
+        .catch(console.error);
     }
   }, [response]);
 

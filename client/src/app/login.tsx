@@ -3,6 +3,8 @@ import { useRouter } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
 import { useEffect } from "react";
 import { Button } from "react-native";
+import { useDispatch } from "react-redux";
+import { setToken } from "./store/authSlice";
 
 const CLIENT_ID = "Ov23liVbQmkBAiSIuewZ";
 const EXCHANGE_API = "https://commit-cadence.vercel.app/api/exchange";
@@ -14,6 +16,7 @@ const discovery = {
 
 export default function GitHubAuthScreen() {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -38,12 +41,13 @@ export default function GitHubAuthScreen() {
       })
         .then((res) => res.json())
         .then((data) => {
-          SecureStore.setItemAsync('github_access_token', data.accessToken);
+          dispatch(setToken(data.accessToken));
+          SecureStore.setItemAsync('accessToken', data.accessToken);
           router.replace('./home');
         })
         .catch(console.error);
     }
-  }, [response]);
+  }, [response, dispatch, router]);
 
   return (
     <Button
